@@ -72,7 +72,9 @@ class PhroccoGroup {
   public function __construct($options) {
     $sources = array();
     $this->options = $options + $this->defaults;
-    $dir_iterator = new PhroccoIterator($this->options["i"]);
+    $input_dir = $this->options['i'];
+    $input_dir_length = strlen($input_dir) + 1;
+    $dir_iterator = new PhroccoIterator($input_dir);
     $iterator = new RecursiveIteratorIterator($dir_iterator, RecursiveIteratorIterator::SELF_FIRST);
     foreach ($iterator as $file) {
       if(!$iterator->isDot() && in_array($iterator->getExtension(), $this->extensions[$this->options["l"]])) {
@@ -88,7 +90,7 @@ class PhroccoGroup {
         $phrocco->output_file = $file_out;
         $subpath = $iterator->getSubPath();
         $phrocco->path = (!empty($subpath) ? "./" : '') . $subpath;
-        $this->group[$file->getBasename()] = $phrocco;
+        $this->group[substr($file->getPathname(), $input_dir_length)] = $phrocco;
         $subpath .= (!empty($subpath) ? '/' : '');
         $this->sources[] = array(
           "url"=>$subpath.$file->getBasename($iterator->getExtension())."html",
